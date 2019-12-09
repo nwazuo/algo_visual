@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Bubble sort visualizer</title>
+  </head>
+  <body>
+    <div class="vis-container"></div>
+
+    <!-- <button class="swap">
+      Click to swap
+    </button> -->
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .vis-container {
+        display: flex;
+        position: relative;
+      }
+      .box {
+        position: absolute;
+        box-sizing: border-box;
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        line-height: 50px;
+        border: 1px solid black;
+      }
+
+      .swap {
+        border: none;
+        background: black;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        color: white;
+      }
+      .swap:hover {
+        color: black;
+        background: white;
+        border: 1px solid black;
+      }
+    </style>
+    <script>
+      const swapBtn = document.querySelector(".swap");
+      const mount = document.querySelector(".vis-container");
+      const width = 52;
+
+      function swap(a, b, node) {
+        if (a == b) return;
+        a = Number(a);
+        b = Number(b);
+        let pos1;
+        let pos2;
+
+        //switch data-index values
+        node.childNodes.forEach(opt => {
+          if (Number(opt.dataset.index) === a) {
+            pos1 = opt;
+          }
+          if (Number(opt.dataset.index) === b) {
+            pos2 = opt;
+          }
+        });
+
+        //switch transform values
+        let hold = pos1.style.transform;
+        pos1.style.transform = pos2.style.transform;
+        pos2.style.transform = hold;
+        // console.log(pos1.dataset.index, pos2.dataset.index);
+      }
+
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          let j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+      }
+
+      function randomOrderedNodes(mountNode, array) {
+        let frag = document.createDocumentFragment();
+        for (let i = 0; i < array.length; i++) {
+          let div = document.createElement("div");
+          div.setAttribute("class", "box");
+          div.setAttribute("data-index", array[i]);
+          div.setAttribute("data-pos", `${i * width}px`);
+          div.style.transition = `transform 0.3s ease`;
+          // div.style.transform = `translateX(${i * width}px);`;
+          div.textContent = array[i];
+
+          frag.appendChild(div);
+        }
+        mountNode.appendChild(frag);
+        mountNode.childNodes.forEach(child => {
+          child.style.transform = `translateX(${child.dataset.pos})`;
+        });
+      }
+
+      let queue = [];
+      function swapArrEl(array, i, j) {
+        let hold = array[i];
+        array[i] = array[j];
+        array[j] = hold;
+        queue.push([array[i], array[j]]);
+      }
+
+      let array = [14, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1];
+
+      shuffle(array);
+      randomOrderedNodes(mount, array);
+
+      function bubbleSort(array) {
+        let swapCount = 0;
+        for (i = 0; i < array.length; i++) {
+          for (let j = 0; j < array.length - i - 1; j++) {
+            if (array[j] > array[j + 1]) {
+              swapArrEl(array, j, j + 1);
+            }
+          }
+        }
+      }
+      for (let i = 0; i < queue.length; i++) {
+        (function(i) {
+          setTimeout(function() {
+            swap(queue[i][0], queue[i][1], mount);
+            console.log(queue[i][0], queue[i][1]);
+          }, i * 500);
+        })(i);
+      }
+      // swap(9, 10, mount);
+    </script>
+  </body>
+</html>
